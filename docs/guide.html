@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JIZURA MCP & Video Studio - 利用ガイド</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0a0b10;
+      --bg-surface: #12141c;
+      --bg-surface-elevated: #1a1e2b;
+      --bg-code: #07080c;
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-focus: #00f2fe;
+      --accent-cyan: #00f2fe;
+      --accent-purple: #9d4edd;
+      --accent-pink: #f72585;
+      --accent-green: #10b981;
+      --text-main: #f0f4fc;
+      --text-muted: #8e9bb0;
+      --text-dim: #5c677d;
+      --font-ui: 'Outfit', 'Noto Sans JP', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(157, 78, 221, 0.15), transparent),
+        radial-gradient(ellipse 60% 40% at 85% 60%, rgba(0, 242, 254, 0.08), transparent);
+      color: var(--text-main);
+      font-family: var(--font-ui);
+      line-height: 1.7;
+      padding: 0 1.5rem 5rem;
+    }
+
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    /* ヘッダー */
+    header {
+      padding: 3.5rem 0 2rem;
+      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 3rem;
+    }
+
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(0, 242, 254, 0.1);
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      color: var(--accent-cyan);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    h1 {
+      font-size: 2.75rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #fff 30%, var(--accent-cyan) 80%, var(--accent-purple) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.75rem;
+    }
+
+    .subtitle {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 760px;
+    }
+
+    .meta-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+    }
+
+    .meta-item strong {
+      color: var(--text-muted);
+    }
+
+    /* ナビゲーション目次 */
+    .toc-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 1.5rem 2rem;
+      margin-bottom: 3.5rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .toc-card h3 {
+      font-size: 1rem;
+      color: var(--accent-cyan);
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .toc-list {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 0.5rem 1.5rem;
+    }
+
+    .toc-list a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .toc-list a:hover {
+      color: var(--accent-cyan);
+    }
+
+    /* セクション共通 */
+    section {
+      margin-bottom: 4rem;
+    }
+
+    h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    h2::before {
+      content: "";
+      width: 4px;
+      height: 1.2em;
+      background: linear-gradient(to bottom, var(--accent-cyan), var(--accent-purple));
+      border-radius: 2px;
+    }
+
+    h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin: 1.75rem 0 0.75rem;
+    }
+
+    p {
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    /* コールアウト / アラート */
+    .callout {
+      background: var(--bg-surface-elevated);
+      border-left: 4px solid var(--accent-cyan);
+      border-radius: 0 8px 8px 0;
+      padding: 1rem 1.25rem;
+      margin: 1.25rem 0;
+    }
+
+    .callout-title {
+      font-weight: 700;
+      color: var(--accent-cyan);
+      font-size: 0.9rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .callout-tip {
+      border-left-color: var(--accent-green);
+    }
+    .callout-tip .callout-title {
+      color: var(--accent-green);
+    }
+
+    .callout-warning {
+      border-left-color: var(--accent-pink);
+    }
+    .callout-warning .callout-title {
+      color: var(--accent-pink);
+    }
+
+    /* コードブロック */
+    pre {
+      background: var(--bg-code);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      overflow-x: auto;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: #e2e8f0;
+      margin: 1rem 0;
+    }
+
+    code {
+      font-family: var(--font-mono);
+      background: rgba(255, 255, 255, 0.08);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.85em;
+      color: var(--accent-cyan);
+    }
+
+    pre code {
+      background: transparent;
+      padding: 0;
+      color: inherit;
+    }
+
+    /* テーブル */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      background: var(--bg-surface);
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+    }
+
+    th, td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      font-size: 0.88rem;
+    }
+
+    th {
+      background: var(--bg-surface-elevated);
+      color: #fff;
+      font-weight: 600;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    td {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: var(--text-muted);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* ステップカード */
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+      margin: 1.5rem 0;
+    }
+
+    .step-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 1.25rem;
+      position: relative;
+    }
+
+    .step-num {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      background: rgba(0, 242, 254, 0.1);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+    }
+
+    .step-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.4rem;
+    }
+
+    /* フッター */
+    footer {
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 2rem;
+      margin-top: 5rem;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.85rem;
+    }
+
+    footer a {
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      color: var(--accent-cyan);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-badge">JIZURA MCP & VIDEO STUDIO</div>
+      <h1>JIZURA MCP 利用・操作ガイド</h1>
+      <p class="subtitle">
+        歌詞ビジュアライザー「字面一 JIZURA」をAIエージェント（MCP）およびスタンドアローンWebUIから自動操作し、YouTubeやローカル動画の上に洗練されたキネティックタイポグラフィを合成・出力するための総合マニュアルです。
+      </p>
+      <div class="meta-bar">
+        <div class="meta-item"><strong>Author:</strong> RimgO</div>
+        <div class="meta-item"><strong>License:</strong> MIT License</div>
+        <div class="meta-item"><strong>Engine:</strong> Playwright + FFmpeg 8.0 + yt-dlp</div>
+        <div class="meta-item"><strong>Base Tool:</strong> JIZURA (hirazisora fork)</div>
+      </div>
+    </header>
+
+    <!-- 目次 -->
+    <div class="toc-card">
+      <h3>TABLE OF CONTENTS / 目次</h3>
+      <ul class="toc-list">
+        <li><a href="#quickstart">1. クイックスタート</a></li>
+        <li><a href="#webui">2. WebUI (Video Studio) の使い方</a></li>
+        <li><a href="#layout">3. テロップ配置＆被写体避けのコツ</a></li>
+        <li><a href="#lyrics">4. JIZURA 歌詞記法リファレンス</a></li>
+        <li><a href="#mcp">5. MCPクライアント（Claude等）連携</a></li>
+        <li><a href="#tools">6. 提供MCPツール一覧</a></li>
+        <li><a href="#troubleshooting">7. トラブルシューティング</a></li>
+        <li><a href="#license">8. ライセンス & クレジット</a></li>
+      </ul>
+    </div>
+
+    <!-- 1. クイックスタート -->
+    <section id="quickstart">
+      <h2>1. クイックスタート</h2>
+      <p>Node.js (v18以降) および FFmpeg がインストールされた環境で使用できます。</p>
+
+      <h3>インストール</h3>
+      <pre><code># 依存パッケージのインストール（Playwright Chromiumも自動導入）
+npm install
+
+# TypeScriptのビルド
+npm run build</code></pre>
+
+      <h3>WebUI（JIZURA Video Studio）の起動</h3>
+      <pre><code>npm run ui
+# 起動後、ブラウザで http://localhost:3000 にアクセス</code></pre>
+
+      <h3>動作確認テスト</h3>
+      <pre><code>npm run verify</code></pre>
+    </section>
+
+    <!-- 2. WebUI -->
+    <section id="webui">
+      <h2>2. WebUI (JIZURA Video Studio) の使い方</h2>
+      <p>WebUIを使うと、YouTube動画やローカル動画を直感的に読み込み、音楽とタイポグラフィを完全に同期させた動画を生成できます。</p>
+
+      <div class="steps-grid">
+        <div class="step-card">
+          <span class="step-num">STEP 1</span>
+          <div class="step-title">動画ソースの選択</div>
+          <p>YouTube URLを入力して「動画を取得」をクリックするか、「ローカル動画をアップロード」タブから手持ちのMP4/MOVファイルをドラッグ＆ドロップします。</p>
+        </div>
+        <div class="step-card">
+          <span class="step-num">STEP 2</span>
+          <div class="step-title">タイムラインと歌詞入力</div>
+          <p>動画を再生しながら「⏱️ タイムスタンプ挿入」を押すと、再生位置のタイムコード（<code>[00:12.50]</code>等）が歌詞エディタに自動挿入されます。</p>
+        </div>
+        <div class="step-card">
+          <span class="step-num">STEP 3</span>
+          <div class="step-title">スタイル & 配置の選択</div>
+          <p>「ノワール・クロマ」「ダークHUD」など好みのスタイルを選択。被写体の顔を遮らないよう「👇 下部テロップ」配置を選びます。</p>
+        </div>
+        <div class="step-card">
+          <span class="step-num">STEP 4</span>
+          <div class="step-title">プレビュー & 書き出し</div>
+          <p>「プレビュー生成」で静止画を確認し、「動画を書き出す」を押すと、完全透過アルファ合成された完成MP4が生成・ダウンロードできます。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. テロップ配置＆被写体避け -->
+    <section id="layout">
+      <h2>3. テロップ配置＆被写体避けのコツ</h2>
+      <p>JIZURA本来のスタイルは画面中央に巨大な装飾プレート（パズルや矢印など）を出すものが多いため、人物やキャラクターがいる動画では以下の設定が効果的です。</p>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">💡 おすすめの設定</div>
+        <p>
+          ・<strong>配置位置:</strong> <code>👇 下部テロップ (推奨)</code> を選択<br>
+          ・<strong>文字サイズ:</strong> <code>標準 (65%)</code> または <code>小 (50%)</code> に設定<br>
+          ・<strong>縦オフセット:</strong> スライダーで <code>+40px 〜 +80px</code> 程度下に下げる
+        </p>
+      </div>
+
+      <h3>巨大なパズルや矢印プレートを抑える方法</h3>
+      <p>歌詞テキストに <code>*強調歌詞*</code>（アスタリスク）を使用すると、JIZURAは「サビの目玉演出」として画面いっぱいの巨大プレートやパズルピースを生成します。</p>
+      <ul>
+        <li><strong>スッキリ見せたい場合:</strong> アスタリスク <code>*</code> を外し、通常の改行や <code>/</code>（カット区切り）で入力します。</li>
+        <li><strong>文字を小さく控えめにしたい場合:</strong> <code>~ささやき歌詞~</code>（チルダ）で囲むと、邪魔にならないスマートなフォントサイズで描画されます。</li>
+      </ul>
+    </section>
+
+    <!-- 4. 歌詞記法 -->
+    <section id="lyrics">
+      <h2>4. JIZURA 歌詞記法リファレンス</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>記法</th>
+            <th>効果</th>
+            <th>入力例</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>1行 ＝ 1フレーズ</code></td>
+            <td>改行ごとに次の演出カットへ切り替わります</td>
+            <td><code>夜明けの色を<br>覚えてる</code></td>
+          </tr>
+          <tr>
+            <td><code>/</code> (スラッシュ)</td>
+            <td>1行の中でさらに細かくカットを分割します</td>
+            <td><code>夜明けの色を / 覚えてる</code></td>
+          </tr>
+          <tr>
+            <td><code>*文字*</code> (アスタリスク)</td>
+            <td>サビ用・文字と演出プレートを巨大化して強調</td>
+            <td><code>*透明なままじゃ終われない!*</code></td>
+          </tr>
+          <tr>
+            <td><code>~文字~</code> (チルダ)</td>
+            <td>Bメロや静かなパート用・控えめに小さく表示</td>
+            <td><code>~ほどけた声が遠くで鳴った~</code></td>
+          </tr>
+          <tr>
+            <td>行末 <code>!</code> (感嘆符)</td>
+            <td>画面揺れ（シェイク）やフラッシュ演出</td>
+            <td><code>走り出せ!</code></td>
+          </tr>
+          <tr>
+            <td><code>{ }</code> (波括弧)</td>
+            <td>複数行を画面上に残したまま順に重ねて表示</td>
+            <td><code>{<br>一行目<br>二行目<br>}</code></td>
+          </tr>
+          <tr>
+            <td><code>[mm:ss.ss]</code></td>
+            <td>LRC形式のタイムスタンプ（曲のビートと同期）</td>
+            <td><code>[00:04.20]サビの歌詞</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 5. MCP連携 -->
+    <section id="mcp">
+      <h2>5. MCPクライアント（Claude等）連携</h2>
+      <p>Claude DesktopなどのMCPクライアントに本サーバーを登録すると、AIアシスタントとのチャットを通じて自然言語でJIZURAを操作できます。</p>
+
+      <h3>Claude Desktop 設定例 (claude_desktop_config.json)</h3>
+      <pre><code>{
+  "mcpServers": {
+    "jizura": {
+      "command": "node",
+      "args": ["/Users/rimgo/jizura-mcp/dist/index.js"]
+    }
+  }
+}</code></pre>
+
+      <h3>指示プロンプト例</h3>
+      <div class="callout">
+        <p>「この動画に合う歌詞を作って、JIZURAでダークHUDスタイル、サビは強調してプレビューを見せて」</p>
+        <p>「BPM 128に設定して、ノワール・クロマ風の演出で動画を書き出して」</p>
+      </div>
+    </section>
+
+    <!-- 6. 提供MCPツール一覧 -->
+    <section id="tools">
+      <h2>6. 提供MCPツール一覧</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ツール名</th>
+            <th>引数</th>
+            <th>説明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>jizura_open</code></td>
+            <td><code>headless</code></td>
+            <td>ブラウザを起動してJIZURAを開く（初期化）</td>
+          </tr>
+          <tr>
+            <td><code>jizura_snapshot</code></td>
+            <td>なし</td>
+            <td>画面上のボタン／チェックボックス／入力欄一覧を取得</td>
+          </tr>
+          <tr>
+            <td><code>jizura_set_lyrics</code></td>
+            <td><code>lyrics</code></td>
+            <td>記法済みの歌詞テキストを流し込む</td>
+          </tr>
+          <tr>
+            <td><code>jizura_click</code></td>
+            <td><code>buttonName</code></td>
+            <td>表示ラベル名でボタンをクリック（例: おまかせで作る）</td>
+          </tr>
+          <tr>
+            <td><code>jizura_set_checkbox</code></td>
+            <td><code>label</code>, <code>checked</code></td>
+            <td>チェックボックスのON/OFF（例: アイテム枠表示）</td>
+          </tr>
+          <tr>
+            <td><code>jizura_fill</code></td>
+            <td><code>label</code>, <code>value</code></td>
+            <td>テキスト入力欄への入力（曲名、アーティスト、BPM等）</td>
+          </tr>
+          <tr>
+            <td><code>jizura_screenshot</code></td>
+            <td>なし</td>
+            <td>現在のプレビュー画面をBase64 PNGで取得</td>
+          </tr>
+          <tr>
+            <td><code>jizura_export</code></td>
+            <td><code>buttonName</code>, <code>savePath</code></td>
+            <td>MP4または透過PNG(ZIP)を書き出してローカル保存</td>
+          </tr>
+          <tr>
+            <td><code>jizura_close</code></td>
+            <td>なし</td>
+            <td>ブラウザを終了してリソースを解放</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 7. トラブルシューティング -->
+    <section id="troubleshooting">
+      <h2>7. トラブルシューティング</h2>
+      
+      <div class="callout callout-warning">
+        <div class="callout-title">動画の背景が白く塗りつぶされ、文字の中にだけ動画が見える場合</div>
+        <p>旧方式のカラーキー（色抜き）合成が使われている可能性があります。最新版ではJIZURA公式の「透過PNG（ZIP・背景なし）」とFFmpegアルファオーバーレイにより完全解決されています。<code>npm run ui</code> を再起動し、最新版でお試しください。</p>
+      </div>
+
+      <div class="callout">
+        <div class="callout-title">動画の再生や書き出しでタイムアウトする場合</div>
+        <p>FFmpegがシステムにインストールされているか確認してください（<code>ffmpeg -version</code>）。macOSの場合は <code>brew install ffmpeg yt-dlp</code> で導入できます。</p>
+      </div>
+    </section>
+
+    <!-- 8. ライセンス -->
+    <section id="license">
+      <h2>8. ライセンス & クレジット</h2>
+      <p>
+        本プロジェクト（<code>jizura-mcp</code>）は <strong>MIT License</strong> に基づいて公開されています。<br>
+        Copyright (c) 2026 RimgO
+      </p>
+      <p>
+        <strong>クレジット:</strong><br>
+        ・字面一 JIZURA ONE STOP EDITION (hirazisora fork): <a href="https://hirazisora.github.io/JIZURA/" target="_blank" style="color: var(--accent-cyan);">hirazisora.github.io/JIZURA/</a><br>
+        ・JIZURA 原案・オリジナル: hirano 氏
+      </p>
+    </section>
+
+    <footer>
+      <p>&copy; 2026 RimgO. All rights reserved. | Released under the MIT License.</p>
+    </footer>
+  </div>
+</body>
+</html>

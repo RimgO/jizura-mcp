@@ -1,0 +1,33 @@
+{
+  "name": "jizura-mcp",
+  "version": "0.1.0",
+  "description": "字面一 JIZURA ONE STOP EDITION (hirazisora fork) をPlaywrightで操作するMCPサーバー。自然文の指示をAIアシスタント側で解釈し、構造化ツール呼び出しに変換してJIZURAのUIを自動操作するラッパー。",
+  "author": "RimgO",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -p .",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "ui": "tsx src/server.ts",
+    "verify": "tsx verify.ts",
+    "postinstall": "playwright install chromium"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "multer": "^2.4.0",
+    "playwright": "^1.48.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/multer": "^2.2.0",
+    "@types/node": "^22.7.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}

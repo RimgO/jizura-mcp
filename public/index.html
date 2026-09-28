@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JIZURA Video Studio | キネティックタイポグラフィ動画エディタ</title>
+  <meta name="description" content="YouTube動画や手持ちの動画を取り込み、JIZURAのキネティックタイポグラフィ（リリック演出）をリアルタイムに重ねて編集・書き出せるWebスタジオ">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@400;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-theme">
+  <!-- 背景アンビエントグラデーション -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+  <div class="ambient-glow glow-3"></div>
+
+  <header class="app-header">
+    <div class="header-left">
+      <div class="brand-badge">
+        <span class="brand-icon">✦</span>
+        <div class="brand-text">
+          <h1 class="brand-title">JIZURA <span>STUDIO</span></h1>
+          <p class="brand-subtitle">Kinetic Typography Video Editor</p>
+        </div>
+      </div>
+    </div>
+    <div class="header-center">
+      <div class="engine-pills">
+        <span class="pill pill-active"><span class="dot"></span> Playwright Engine</span>
+        <span class="pill"><span class="dot"></span> FFmpeg 8.0</span>
+        <span class="pill"><span class="dot"></span> yt-dlp Core</span>
+      </div>
+    </div>
+      <a href="guide.html" target="_blank" class="btn-link" title="操作・利用ガイドを表示">
+        📖 ガイド
+      </a>
+      <button id="btn-quick-sample" class="btn-ghost" title="サンプルの歌詞と設定を読み込みます">
+        <span>💡</span> サンプル読込
+      </button>
+      <a href="https://hirazisora.github.io/JIZURA/" target="_blank" rel="noopener" class="btn-link">
+        JIZURA本家 ↗
+      </a>
+    </div>
+  </header>
+
+  <main class="app-layout">
+    <!-- 左パネル: 動画ソース＆プレイヤー -->
+    <section class="panel panel-left" aria-label="動画入力とプレイヤー">
+      <div class="panel-header">
+        <div class="step-badge">STEP 1</div>
+        <h2>動画ソースの選択</h2>
+      </div>
+
+      <!-- ソース入力タブ -->
+      <div class="source-tabs">
+        <button id="tab-yt" class="tab-btn active" data-target="panel-yt">YouTube から取得</button>
+        <button id="tab-file" class="tab-btn" data-target="panel-file">ローカル動画をアップロード</button>
+      </div>
+
+      <!-- YouTube URL入力 -->
+      <div id="panel-yt" class="tab-content active">
+        <div class="input-with-button">
+          <div class="url-input-wrap">
+            <span class="input-icon">▶</span>
+            <input type="text" id="input-yt-url" placeholder="https://www.youtube.com/watch?v=..." autocomplete="off">
+          </div>
+          <button id="btn-fetch-yt" class="btn-primary">
+            <span class="btn-text">動画を取得</span>
+            <span class="spinner hidden" id="spinner-yt"></span>
+          </button>
+        </div>
+        <p class="input-hint">YouTube動画のURLを入力すると自動で高画質MP4を取得してエディタに配置します</p>
+      </div>
+
+      <!-- ファイルアップロード -->
+      <div id="panel-file" class="tab-content">
+        <div class="dropzone" id="video-dropzone">
+          <input type="file" id="file-input" accept="video/mp4,video/webm,video/quicktime,audio/*" class="file-input-hidden">
+          <div class="dropzone-content">
+            <span class="drop-icon">📂</span>
+            <p class="drop-main">動画ファイルをドラッグ＆ドロップ</p>
+            <p class="drop-sub">または <span class="drop-highlight">クリックして選択</span> (MP4, WebM, MOV, MP3)</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 動画メタデータバー -->
+      <div id="video-meta-card" class="meta-card hidden">
+        <img id="meta-thumb" src="" alt="サムネイル" class="meta-thumb">
+        <div class="meta-details">
+          <h3 id="meta-title" class="meta-title">動画タイトル</h3>
+          <div class="meta-tags">
+            <span id="meta-duration" class="meta-tag">00:00</span>
+            <span id="meta-author" class="meta-tag">作者</span>
+            <span id="meta-status" class="meta-tag tag-success">ロード完了</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ビデオプレイヤー -->
+      <div class="player-wrapper">
+        <div class="player-container">
+          <video id="main-video" playsinline preload="metadata"></video>
+          <div id="player-placeholder" class="player-placeholder">
+            <span class="placeholder-icon">🎬</span>
+            <p>動画を選択またはURLを入力してください</p>
+          </div>
+        </div>
+
+        <!-- プレイヤータイムラインコントロール -->
+        <div class="player-controls">
+          <button id="btn-play-pause" class="btn-ctrl" disabled>▶</button>
+          <span id="time-display" class="time-code">00:00.00 / 00:00.00</span>
+          <input type="range" id="seek-bar" class="seek-slider" min="0" max="100" value="0" step="0.1" disabled>
+          <button id="btn-insert-timestamp" class="btn-sm btn-ghost" title="再生位置のタイムスタンプを歌詞に挿入" disabled>
+            ⏱️ タイムスタンプ挿入
+          </button>
+        </div>
+
+        <!-- 時間トリミング設定（オプション） -->
+        <div class="trim-controls">
+          <label class="trim-label">
+            <span>開始秒:</span>
+            <input type="number" id="trim-start" min="0" step="0.5" value="0" class="input-num">
+          </label>
+          <label class="trim-label">
+            <span>長さ(秒):</span>
+            <input type="number" id="trim-duration" min="1" step="1" placeholder="全編" class="input-num">
+          </label>
+          <button id="btn-apply-trim" class="btn-xs btn-outline" disabled>切り出し適用</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 右パネル: JIZURA キネティックタイポグラフィスタジオ -->
+    <section class="panel panel-right" aria-label="歌詞と演出設定">
+      <div class="panel-header">
+        <div class="step-badge">STEP 2</div>
+        <h2>リリック & タイポグラフィ演出</h2>
+      </div>
+
+      <!-- 曲情報入力 -->
+      <div class="info-row">
+        <label class="form-group">
+          <span class="label-text">曲名 / タイトルカード</span>
+          <input type="text" id="input-title" placeholder="例: 夜明けの色" class="input-field">
+        </label>
+        <label class="form-group">
+          <span class="label-text">アーティスト</span>
+          <input type="text" id="input-artist" placeholder="例: AI Artist" class="input-field">
+        </label>
+      </div>
+
+      <!-- 歌詞エディタ -->
+      <div class="editor-section">
+        <div class="editor-header">
+          <span class="label-text">歌詞テキスト (JIZURA記法)</span>
+          <!-- 記法クイック挿入バー -->
+          <div class="syntax-bar" id="syntax-bar">
+            <!-- JSで動的生成 -->
+          </div>
+        </div>
+
+        <textarea id="input-lyrics" class="lyrics-textarea" rows="7" placeholder="歌詞を1行1フレーズで入力...&#10;例:&#10;夜明けの色を/覚えてる&#10;ほどけた声が遠くで鳴った&#10;*透明なままじゃ終われない!*"></textarea>
+      </div>
+
+      <!-- スタイルプリセットセレクター -->
+      <div class="styles-section">
+        <div class="section-sub-header">
+          <span class="label-text">演出スタイル</span>
+          <div class="style-actions">
+            <button id="btn-style-random" class="btn-xs btn-glow">🎲 おまかせで作る</button>
+            <button id="btn-style-shuffle" class="btn-xs btn-ghost">🔀 シャッフル</button>
+          </div>
+        </div>
+        <div class="style-grid" id="style-grid">
+          <!-- JSで動的生成 -->
+        </div>
+      </div>
+
+      <!-- テロップ配置＆レイアウト調整（被写体・顔避け） -->
+      <div class="layout-section">
+        <div class="section-sub-header">
+          <span class="label-text">🎬 テロップ配置 & スケール（被写体・顔避け）</span>
+        </div>
+        <div class="layout-controls-grid">
+          <div class="layout-control-group">
+            <label class="control-label">配置位置:</label>
+            <div class="btn-group-toggle" id="group-position">
+              <button type="button" class="btn-toggle active" data-pos="bottom">👇 下部テロップ (推奨)</button>
+              <button type="button" class="btn-toggle" data-pos="center">🎯 中央 (全画面)</button>
+              <button type="button" class="btn-toggle" data-pos="top">👆 上部</button>
+            </div>
+          </div>
+          <div class="layout-control-group">
+            <label class="control-label">文字サイズ (スケール):</label>
+            <div class="btn-group-toggle" id="group-scale">
+              <button type="button" class="btn-toggle" data-scale="0.5">小 (50%)</button>
+              <button type="button" class="btn-toggle active" data-scale="0.65">標準 (65%)</button>
+              <button type="button" class="btn-toggle" data-scale="0.8">大 (80%)</button>
+              <button type="button" class="btn-toggle" data-scale="1.0">原寸 (100%)</button>
+            </div>
+          </div>
+          <div class="layout-control-group">
+            <div class="offset-header">
+              <label class="control-label" for="slider-y-offset">縦位置オフセット (微調整):</label>
+              <span id="offset-val" class="offset-display">+40px</span>
+            </div>
+            <input type="range" id="slider-y-offset" min="-150" max="150" value="40" step="5" class="seek-slider">
+          </div>
+        </div>
+      </div>
+
+      <!-- アクションバー -->
+      <div class="action-bar">
+        <div class="action-options">
+          <label class="checkbox-label">
+            <input type="checkbox" id="check-hide-frame" checked>
+            <span>編集枠線を非表示</span>
+          </label>
+          <label class="select-label">
+            <span>合成方式:</span>
+            <select id="select-render-mode" class="select-field">
+              <option value="direct">JIZURA直接背景 (推奨)</option>
+              <option value="composite_ffmpeg">FFmpegオーバーレイ合成</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="action-buttons">
+          <button id="btn-preview" class="btn-action btn-preview">
+            <span class="btn-icon">👁️</span>
+            <span>プレビュー生成</span>
+          </button>
+          <button id="btn-render" class="btn-action btn-render">
+            <span class="btn-icon">⚡</span>
+            <span>動画を書き出す</span>
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- モーダル: プレビュー＆書き出し結果 -->
+  <div id="result-modal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-title">プレビュー確認</h3>
+        <button id="btn-close-modal" class="btn-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <!-- プログレスローダー -->
+        <div id="modal-loader" class="modal-loader hidden">
+          <div class="pulse-ring"></div>
+          <p id="loader-status" class="loader-text">JIZURA エンジンで描画中...</p>
+        </div>
+
+        <!-- プレビュー画像表示 -->
+        <div id="modal-preview-box" class="modal-media-box hidden">
+          <img id="modal-preview-img" src="" alt="プレビュー画像" class="preview-result-img">
+        </div>
+
+        <!-- 完成動画プレイヤー -->
+        <div id="modal-video-box" class="modal-media-box hidden">
+          <video id="modal-video" controls autoplay playsinline class="modal-video-player"></video>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="btn-modal-dismiss" class="btn-ghost">閉じる</button>
+        <a id="btn-modal-download" href="#" download="jizura_video.mp4" class="btn-primary hidden">
+          <span>⬇️ 完成動画をダウンロード</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
